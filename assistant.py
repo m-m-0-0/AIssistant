@@ -105,7 +105,7 @@ def transcribe_audio(audio):
     
     return text
 
-def preprocess_ssml_text(text, voice_name="en-US-AriaNeural", rate="medium"):
+def preprocess_ssml_text(text, voice_name=AZURE_VOICE, rate="medium"):
     if rate not in ["x-slow", "slow", "medium", "fast", "x-fast"]:
         raise ValueError("Invalid rate value")
 
