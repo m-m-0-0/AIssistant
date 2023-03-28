@@ -1,0 +1,5 @@
+{
+    "cmd": "start C:\\Windows\\System32\\cmd.exe",
+    "powershell": "start C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "notepad": "C:\\Windows\\System32\\notepad.exe"
+}

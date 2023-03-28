@@ -1,0 +1,9 @@
+azure-cognitiveservices-speech
+openai
+pyaudio
+pyperclip
+pvporcupine
+playsound==1.2.2
+SpeechRecognition
+tiktoken
+win10toast
