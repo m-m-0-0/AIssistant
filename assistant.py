@@ -99,7 +99,7 @@ transcribes audio and returns the transcription if any speech is detected, other
 """
 def transcribe_audio(audio):
     try:
-        text = sr_instance.recognize_google(audio)
+        text = sr_instance.recognize_whisper_api(audio, api_key=OPENAI_KEY)
     except sr.UnknownValueError:
         return None
     
