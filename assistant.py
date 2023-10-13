@@ -18,6 +18,7 @@ import pyperclip
 from playsound import playsound
 import win10toast
 
+
 #utilities to time functions
 import time
 
@@ -25,6 +26,9 @@ BOT_NAME = "BlueBerry"
 AZURE_VOICE = "en-US-AriaNeural"
 KEYWORDS = ["blueberry"]
 OPENAI_MODEL = "gpt-3.5-turbo" #only chat models are supported
+
+from Plugins.OpenPlugin import OpenPlugin
+from Plugins.NavigatePlugin import NavigatePlugin
 
 #api keys
 PCP_ACCESS_KEY = os.environ.get('PORCUPINE_KEY')
@@ -37,6 +41,8 @@ rec_finish = "./sounds/rec_finish.wav"
 
 #Speech recognition
 sr_instance = sr.Recognizer()
+sr_instance.pause_threshold = 0.5
+
 
 #OpenAI
 tokenizer = tiktoken.encoding_for_model(OPENAI_MODEL)
@@ -49,6 +55,9 @@ speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, au
 
 #Porcupine wake word
 porcupine = pvporcupine.create(PCP_ACCESS_KEY, keywords=KEYWORDS)
+
+plugins = [OpenPlugin(), NavigatePlugin()]
+
 
 """
 takes a file path as input and returns a string with placeholders that can be filled in by keyword arguments provided as **kwargs.
@@ -99,7 +108,7 @@ transcribes audio and returns the transcription if any speech is detected, other
 """
 def transcribe_audio(audio):
     try:
-        text = sr_instance.recognize_google(audio)
+        text = sr_instance.recognize_whisper_api(audio, api_key=OPENAI_KEY)
     except sr.UnknownValueError:
         return None
     
@@ -127,7 +136,7 @@ def get_chat_completion(prompt, query):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=chatgpt_messages,
-        temperature=0.5,
+        temperature=0.8,
         max_tokens=500)
 
     response = response['choices'][0]['message']['content']
@@ -146,6 +155,14 @@ def display_toast(title, text, icon_path=None, duration=5):
     toaster = win10toast.ToastNotifier()
     toaster.show_toast(title, text, icon_path=icon_path, duration=duration)
 
+def format_plugins(plugins):
+        plugins_prompt = ""
+        for i,plugin in enumerate(plugins):
+            #n. command: description
+            plugins_prompt += plugin.format_prompt(i+1) + "\n"
+
+        return plugins_prompt
+
 if __name__ == '__main__':
     mic_index = pyaudio.PyAudio().get_default_input_device_info()['index']
     print(pyaudio.PyAudio().get_device_info_by_index(mic_index)['name'])
@@ -154,7 +171,9 @@ if __name__ == '__main__':
     with open ("./paths_whitelist.json", "r") as f:
         paths = json.load(f)
 
-    prompt = load_prompt("./prompt.txt", apps_names=paths.keys())
+    prompt = load_prompt("./prompt.txt", apps_names=paths.keys(), plugins = format_plugins(plugins))
+
+    print("Prompt: " + prompt)
 
     prompt_length = len(tokenizer.encode(prompt))
     print("Prompt length:", prompt_length)
