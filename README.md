@@ -22,6 +22,3 @@ To run the assistant, just run the following commands:
 
 ## Credits
 Thanks to [dland](https://freesound.org/people/dland) on freesound.org for the assistant's activation cues: [hint.wav](https://freesound.org/people/dland/sounds/320181/)
-
-## Misc
-For any criticism about my code, kindly refer to my GitHub bio.
